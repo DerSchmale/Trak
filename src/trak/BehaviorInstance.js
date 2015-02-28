@@ -22,8 +22,6 @@ TRAK.BehaviorInstance = function(behavior, layer, startTime, endTime, fadeInTime
 }
 
 TRAK.BehaviorInstance.prototype = {
-    constructor: TRAK.BehaviorInstance,
-
     /**
      * Called by Trak.
      * @param dt The time difference since last frame.

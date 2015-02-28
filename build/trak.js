@@ -21,8 +21,6 @@ TRAK.Behavior = function()
  * @author David Lenaerts
  */
 TRAK.Behavior.prototype = {
-    constructor: TRAK.Behavior,
-
 // override these when necessary:
 
     /**
@@ -87,8 +85,6 @@ TRAK.BehaviorInstance = function(behavior, layer, startTime, endTime, fadeInTime
 }
 
 TRAK.BehaviorInstance.prototype = {
-    constructor: TRAK.BehaviorInstance,
-
     /**
      * Called by Trak.
      * @param dt The time difference since last frame.
@@ -128,10 +124,11 @@ TRAK.BehaviorInstance.prototype = {
 }
 TRAK.CompoundBehavior = function(behaviors)
 {
+    TRAK.Behavior.call(this);
     this._behaviors = behaviors;
 }
 
-TRAK.CompoundBehavior.prototype = new TRAK.Behavior();
+TRAK.CompoundBehavior.prototype = Object.create(TRAK.Behavior);
 
 TRAK.CompoundBehavior.prototype.update = function(dt, time)
 {

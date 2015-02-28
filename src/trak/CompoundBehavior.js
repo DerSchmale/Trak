@@ -1,9 +1,10 @@
 TRAK.CompoundBehavior = function(behaviors)
 {
+    TRAK.Behavior.call(this);
     this._behaviors = behaviors;
 }
 
-TRAK.CompoundBehavior.prototype = new TRAK.Behavior();
+TRAK.CompoundBehavior.prototype = Object.create(TRAK.Behavior);
 
 TRAK.CompoundBehavior.prototype.update = function(dt, time)
 {

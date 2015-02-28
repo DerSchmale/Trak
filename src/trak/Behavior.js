@@ -16,8 +16,6 @@ TRAK.Behavior = function()
  * @author David Lenaerts
  */
 TRAK.Behavior.prototype = {
-    constructor: TRAK.Behavior,
-
 // override these when necessary:
 
     /**
