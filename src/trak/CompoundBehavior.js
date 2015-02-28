@@ -4,7 +4,7 @@ TRAK.CompoundBehavior = function(behaviors)
     this._behaviors = behaviors;
 }
 
-TRAK.CompoundBehavior.prototype = Object.create(TRAK.Behavior);
+TRAK.CompoundBehavior.prototype = Object.create(TRAK.Behavior.prototype);
 
 TRAK.CompoundBehavior.prototype.update = function(dt, time)
 {
