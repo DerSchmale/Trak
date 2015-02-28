@@ -1,6 +1,6 @@
 {
   "name": "trakjs",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "A JavaScript syncing and composition engine for demo-like productions",
   "keywords": [
     "demo",
