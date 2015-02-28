@@ -1,5 +1,5 @@
 {
-  "name": "Trak",
+  "name": "trakjs",
   "version": "0.0.1",
   "description": "A JavaScript syncing and composition engine for demo-like productions",
   "keywords": [
