@@ -9,7 +9,7 @@ gulp.task('package', function() {
         .pipe(gulp.dest('./build'));
 });
 
-gulp.task('minimize', function() {
+gulp.task('default', function() {
     return gulp.src('./src/**/*.js')
         .pipe(concat('trak.js'))
         .pipe(gulp.dest('./build'))
