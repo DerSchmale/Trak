@@ -122,13 +122,58 @@ TRAK.BehaviorInstance.prototype = {
         this.behavior.onRemove();
     }
 }
+/**
+ * Converts note types or measures to milliseconds. Time signature or tempo changes not supported.
+ * @param bpm The amount of beats per minute of the song
+ * @constructor
+ */
+TRAK.BPMToMS = function(bpm, numerator, denominator)
+{
+    this._numerator = numerator || 4;
+    this._denominator = denominator || 4;
+    this._bpm = bpm;
+    this._msPer16th = 15000/bpm;
+};
+
+TRAK.BPMToMS.prototype =
+{
+    fromBar: function(measure)
+    {
+        return this.from16th(measure * 16.0 / this._denominator * this._numerator)
+    },
+
+    fromWhole: function(value)
+    {
+        return this.from16th(value * 16.0);
+    },
+
+    fromHalf: function(value)
+    {
+        return this.from16th(value * 8.0);
+    },
+
+    from4th: function(value)
+    {
+        return this.from16th(value * 4.0);
+    },
+
+    from8th: function(value)
+    {
+        return this.from16th(value * 2.0);
+    },
+
+    from16th: function(value)
+    {
+        return value * this._msPer16th;
+    }
+};
 TRAK.CompoundBehavior = function(behaviors)
 {
     TRAK.Behavior.call(this);
     this._behaviors = behaviors;
 }
 
-TRAK.CompoundBehavior.prototype = Object.create(TRAK.Behavior);
+TRAK.CompoundBehavior.prototype = Object.create(TRAK.Behavior.prototype);
 
 TRAK.CompoundBehavior.prototype.update = function(dt, time)
 {
@@ -334,14 +379,11 @@ TRAK.FrameTicker.prototype = {
     }
 }
 /**
- *
- * @param bpm The amount of beats per minute of the song
  * @constructor
  */
-TRAK.TrakEngine = function(bpm)
+TRAK.TrakEngine = function()
 {
     this._playheadTime = 0;
-    this._bpm = bpm;
     this._markerIndex = 0;
     this._behaviors = [];  // of type Behaviour
     this._syncMarkers = []; // of type SyncMarker
@@ -409,31 +451,30 @@ TRAK.TrakEngine.prototype = {
 
     /**
      * Adds a sync marker.
-     * @param {number} time16th The 16th note in the song to which to attach the marker.
+     * @param {number} time The time in milliseconds from the start to which to attach the marker.
      * @param {string} name The name of the marker, for easy reference
      */
-    addSyncMarker: function(note16th, name)
+    addSyncMarker: function(time, name)
     {
         this._isInitialized = false;
-        syncMarkers.push( { time16th: time16th, name: name } );
+        this._syncMarkers.push( { time: time, name: name } );
     },
 
     /**
      * Adds a behavior to the Trak engine
      * @param behaviour The behavior to be added.
-     * @param {number} startTime The 16th note at which to start the effect. This includes the fade-in time.
-     * @param {number} endTime The 16th note at which to stop the effect. This includes the fade-out time.
-     * @param {number} fadeIn16th The duration in 16th notes for the fade-in effect.
-     * @param {number} fadeOut16th The duration in 16th notes for the fade-out effect.
+     * @param {number} startTime The millisecond at which to start the effect. This includes the fade-in time.
+     * @param {number} endTime The millisecond at which to stop the effect. This includes the fade-out time.
+     * @param {number} fadeInTime (optional) The duration in milliseconds for the fade-in effect.
+     * @param {number} fadeOutTime (optional) The duration in milliseconds for the fade-out effect.
      * @param {number} layer (optional) The layer of the behavior. Concurrent behaviours with lower layer values will be executed first.
      */
-    addBehavior: function(behaviour, start16th, end16th, fadeIn16th, fadeOut16th, layer)
+    addBehavior: function(behaviour, startTime, endTime, fadeInTime, fadeOutTime, layer)
     {
-        var msPer16th = 15000/this._bpm;
-        var startTime = start16th * msPer16th;
-        var endTime = end16th * msPer16th;
+        if (fadeOutTime === undefined) fadeOutTime = 0;
+        if (fadeInTime === undefined) fadeInTime = 0;
         if (layer === undefined) layer = 0;
-        this._behaviors.push(new TRAK.BehaviorInstance(behaviour, layer, startTime, endTime, msPer16th, msPer16th));
+        this._behaviors.push(new TRAK.BehaviorInstance(behaviour, layer, startTime, endTime, fadeInTime, fadeOutTime));
 
         this._isInitialized = false;
     },
@@ -441,7 +482,7 @@ TRAK.TrakEngine.prototype = {
     _initialize: function()
     {
         this._isInitialized = true;
-        this._syncMarkers.sort( function(a, b) { return a.time16th - b.time16th; } );
+        this._syncMarkers.sort( function(a, b) { return a.time - b.time; } );
         this._behaviors.sort( function(a, b) { return a.priority - b.priority; } );    // sort on priority
         this._markerIndex = 0;
         this._runningBehaviorHead = null;
