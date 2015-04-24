@@ -6,10 +6,10 @@ TRAK.CompoundBehavior = function(behaviors)
 
 TRAK.CompoundBehavior.prototype = Object.create(TRAK.Behavior.prototype);
 
-TRAK.CompoundBehavior.prototype.update = function(dt, time)
+TRAK.CompoundBehavior.prototype.update = function(dt, time, strength)
 {
     for (var i = 0; i < this._behaviors.length; ++i)
-        this._behaviors[i].update(dt, time);
+        this._behaviors[i].update(dt, time, strength);
 };
 
 TRAK.CompoundBehavior.prototype.onMarker = function(name)
@@ -29,14 +29,3 @@ TRAK.CompoundBehavior.prototype.onRemove = function()
     for (var i = 0; i < this._behaviors.length; ++i)
         this._behaviors[i].onRemove();
 };
-
-/**
- * @private
- */
-TRAK.CompoundBehavior.setStrength = function(value)
-{
-    this._strength = value;
-
-    for (var i = 0; i < this._behaviors.length; ++i)
-        this._behaviors[i].setStrength(value);
-}

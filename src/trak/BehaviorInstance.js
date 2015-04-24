@@ -37,18 +37,19 @@ TRAK.BehaviorInstance.prototype = {
             this.isRunning = true;
         }
 
+        var strength = 1.0;
         if (this.fadeInTime > 0 && relativeTime < this.fadeInTime)
-            this.behavior.strength = relativeTime / this.fadeInTime;
+            strength = relativeTime / this.fadeInTime;
         else {
             this.timeDiff = this.endTime - this.time;
 
             if (this.fadeOutTime > 0 && this.timeDiff < this.fadeOutTime)
-                this.behavior.strength = relativeTime / this.fadeOutTime;
+                strength = relativeTime / this.fadeOutTime;
             else
-                this.behavior.strength = 1;
+                strength = 1.0;
         }
 
-        this.behavior.update(dt, time);
+        this.behavior.update(dt, time, strength);
     },
 
     /**

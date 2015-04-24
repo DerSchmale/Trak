@@ -1,7 +1,7 @@
 TRAK.Behavior = function()
 {
     this._strength = 0.0;
-}
+};
 
 /**
  * Behavior is class for track elements which can be a simple command, a scripted movement, an effect, etc.
@@ -24,7 +24,7 @@ TRAK.Behavior.prototype = {
      * @param dt The time difference since last frame. Use the time property whenever possible for numerical stability.
      * @param time The time relative to the behavior's start time (preferred use)
      */
-    update: function(dt, time) {},
+    update: function(dt, time, strength) {},
 
     /**
      * Override to provide functionality to react when Trak reaches a marker at the current playhead position.
@@ -41,17 +41,6 @@ TRAK.Behavior.prototype = {
      * Called when the behavior is removed. Override to destroy the effect. Generally, if onRegister is implemented,
      * onRemove should be as well, to clean up its effects.
      */
-    onRemove: function() {},
-
-
-    /**
-     * @private
-     */
-    getStrength: function() { return this._strength; },
-
-    /**
-     * @private
-     */
-    setStrength: function(value) { this._strength = value; }
+    onRemove: function() {}
 }
 

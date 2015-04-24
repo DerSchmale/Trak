@@ -6,7 +6,7 @@ var TRAK = { VERSION: '0.1' };
 TRAK.Behavior = function()
 {
     this._strength = 0.0;
-}
+};
 
 /**
  * Behavior is class for track elements which can be a simple command, a scripted movement, an effect, etc.
@@ -29,7 +29,7 @@ TRAK.Behavior.prototype = {
      * @param dt The time difference since last frame. Use the time property whenever possible for numerical stability.
      * @param time The time relative to the behavior's start time (preferred use)
      */
-    update: function(dt, time) {},
+    update: function(dt, time, strength) {},
 
     /**
      * Override to provide functionality to react when Trak reaches a marker at the current playhead position.
@@ -46,18 +46,7 @@ TRAK.Behavior.prototype = {
      * Called when the behavior is removed. Override to destroy the effect. Generally, if onRegister is implemented,
      * onRemove should be as well, to clean up its effects.
      */
-    onRemove: function() {},
-
-
-    /**
-     * @private
-     */
-    getStrength: function() { return this._strength; },
-
-    /**
-     * @private
-     */
-    setStrength: function(value) { this._strength = value; }
+    onRemove: function() {}
 }
 
 
@@ -100,18 +89,19 @@ TRAK.BehaviorInstance.prototype = {
             this.isRunning = true;
         }
 
+        var strength = 1.0;
         if (this.fadeInTime > 0 && relativeTime < this.fadeInTime)
-            this.behavior.strength = relativeTime / this.fadeInTime;
+            strength = relativeTime / this.fadeInTime;
         else {
             this.timeDiff = this.endTime - this.time;
 
             if (this.fadeOutTime > 0 && this.timeDiff < this.fadeOutTime)
-                this.behavior.strength = relativeTime / this.fadeOutTime;
+                strength = relativeTime / this.fadeOutTime;
             else
-                this.behavior.strength = 1;
+                strength = 1.0;
         }
 
-        this.behavior.update(dt, time);
+        this.behavior.update(dt, time, strength);
     },
 
     /**
@@ -175,10 +165,10 @@ TRAK.CompoundBehavior = function(behaviors)
 
 TRAK.CompoundBehavior.prototype = Object.create(TRAK.Behavior.prototype);
 
-TRAK.CompoundBehavior.prototype.update = function(dt, time)
+TRAK.CompoundBehavior.prototype.update = function(dt, time, strength)
 {
     for (var i = 0; i < this._behaviors.length; ++i)
-        this._behaviors[i].update(dt, time);
+        this._behaviors[i].update(dt, time, strength);
 };
 
 TRAK.CompoundBehavior.prototype.onMarker = function(name)
@@ -198,17 +188,6 @@ TRAK.CompoundBehavior.prototype.onRemove = function()
     for (var i = 0; i < this._behaviors.length; ++i)
         this._behaviors[i].onRemove();
 };
-
-/**
- * @private
- */
-TRAK.CompoundBehavior.setStrength = function(value)
-{
-    this._strength = value;
-
-    for (var i = 0; i < this._behaviors.length; ++i)
-        this._behaviors[i].setStrength(value);
-}
 /**
  *
  * @param numFrames The amount of frames to average
